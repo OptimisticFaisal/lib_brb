@@ -5,12 +5,14 @@
     "attribute_weight": "1",
     "ref_val": [
       "50",
+      "45",
       "40",
       "30"
     ],
     "ref_title": [
       "High",
       "Medium",
+      "Med",
       "Low"
     ],
     "consequent_values": [

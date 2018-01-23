@@ -72,7 +72,7 @@ class RuleBase(object):
 
         # print "Combinations are: {}".format(combinations)
 
-        print "Consequence values are: {}".format(self.con_ref_values)
+        print ("Referential Values of Consequent attributes: {}".format(self.con_ref_values))
 
         # Calculate y for each combination and distribute consequence values in the range
         for each in self.combinations:
@@ -106,9 +106,9 @@ class RuleBase(object):
                 rules.combinations = each
                 self.rule_row_list.append(rules)
 
-        print "Rule Base: "
+        print ("Rule Base: ")
         for each in self.rule_row_list:
-            print each.__dict__
+            print (each.__dict__)
         return self.rule_row_list
 
     '''
@@ -117,7 +117,7 @@ class RuleBase(object):
 
     def input_transformation(self):
         for each in self.obj_list:
-            print "Input value for {} is {}".format(each.name, each.input_val)
+            print ("Input value for {} is {}".format(each.name, each.input_val))
             # print "Value before input transformation: {}".format(each.transformed_val)
             try:
                 user_input = float(each.input_val)
@@ -144,7 +144,7 @@ class RuleBase(object):
                         each.transformed_val[j + 1] = str(val_1)
                         val_2 = 1 - val_1
                         each.transformed_val[j] = str(val_2)
-            print "Value after input transformation: {}".format(each.transformed_val)
+            print ("Value after input transformation: {}".format(each.transformed_val))
 
     '''
     Calculate activation weight
@@ -213,7 +213,7 @@ class RuleBase(object):
             each.consequence_val = new_val_list
 
         for each in self.rule_row_list:
-            print "{}".format(each.consequence_val)
+            print ("{}".format(each.consequence_val))
 
     '''
     Rule aggregation
@@ -283,7 +283,7 @@ class RuleBase(object):
 
         # output = [round(each, 2) for each in aggregated_consequence_val]
         output = [each for each in aggregated_consequence_val]
-        print "Aggregated Rules: ".format(output)
+        print ("Aggregated Rules: ".format(output))
         return output
 
 

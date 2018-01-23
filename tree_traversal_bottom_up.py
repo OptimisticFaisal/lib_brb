@@ -28,7 +28,7 @@ for each in data:
 
 # Sort the obj_list based on is_input is true
 obj_list.sort(key=lambda x: x.is_input == "true", reverse=True)
-print "Initial nodes: {}".format([str(each.antecedent_id) for each in obj_list])
+print ("Initial nodes: {}".format([ str(each.antecedent_id) for each in obj_list ]))
 
 visited = list()
 
@@ -42,7 +42,7 @@ result = list()
 
 # While you have an object in obj_list
 while len(obj_list):
-    print "\n\nIteration: {}\n".format(count)
+    print ("\n\nIteration: {}\n".format(count))
     count += 1
 
     # Get parent of the current node.
@@ -69,8 +69,8 @@ while len(obj_list):
 
     if len(visiting) == len(obj_list):
         # Compute the BRB sub-tree for the nodes in visiting.
-        print "Computing value of {} for {}".format(parent.antecedent_id,
-                                                    [str(each.antecedent_id) for each in visiting if each.antecedent_id != parent.antecedent_id])
+        print ("Computing value of {} for {}".format(parent.antecedent_id,
+        [str(each.antecedent_id) for each in visiting if each.antecedent_id != parent.antecedent_id]))
         # import pdb; pdb.set_trace()
         # brb_calculation = RuleBase()
         rule_base = RuleBase(visiting, parent)
@@ -90,29 +90,30 @@ while len(obj_list):
 
         # import pdb; pdb.set_trace()
 
-        print "Rule Row List: {}".format([each.__dict__ for each in row_list])
+        print ("Rule Row List: {}".format([each.__dict__ for each in row_list]))
 
 
-        print "\nAll the current nodes have same parent \"{}\" so the tree traversal is done and the ultimate output is: {}".format(parent.antecedent_id, parent.antecedent_id)
+        print ("\nAll the current nodes have same parent \"{}\""
+        " so the tree traversal is done and the ultimate output is: {}".format(parent.antecedent_id, parent.antecedent_id))
 
-        print "Calculated consequence values for {} are: {}".format(parent.antecedent_id, consequence_val)
+        print ("Calculated consequence values for {} are: {}".format(parent.antecedent_id, consequence_val))
 
-        print "Crisp Value: {}".format(str(crisp_val))
+        print ("Crisp Value: {}".format(str(crisp_val)))
 
         break
 
-    print "For {}, parent is: {}".format(str(obj_list[i].antecedent_id), parent.antecedent_id)
+    print ("For {}, parent is: {}".format(str(obj_list[i].antecedent_id), parent.antecedent_id))
 
     # if not all the siblings has same parent, continue to the next node of obj_list
     if not isAllInput:
         i += 1
-        print "Current Nodes: {}".format([str(each.antecedent_id) for each in visiting])
-        print "All the children for parent {} is not calculated yet".format(parent)
+        print ("Current Nodes: {}".format([str(each.antecedent_id) for each in visiting]))
+        print ("All the children for parent {} is not calculated yet".format(parent))
         obj_list.sort(key=lambda x: x.is_input == "true", reverse=True)
         continue
     else:
         # Compute the BRB sub-tree for the nodes in visiting.
-        print "Computing value of {} for {}".format(parent.antecedent_id, [str(each.antecedent_id) for each in visiting])
+        print ("Computing value of {} for {}".format(parent.antecedent_id, [str(each.antecedent_id) for each in visiting]))
         # import pdb; pdb.set_trace()
         # brb_calculation = RuleBase()
         rule_base = RuleBase(visiting, parent)
@@ -132,9 +133,9 @@ while len(obj_list):
 
         # import pdb; pdb.set_trace()
 
-        print "Calculated consequence values for {} are: {}".format(parent.antecedent_id, consequence_val)
+        print ("Calculated consequence values for {} are: {}".format(parent.antecedent_id, consequence_val))
 
-        print "Rule Row List: {}".format([each.__dict__ for each in row_list_1])
+        print ("Rule Row List: {}".format([each.__dict__ for each in row_list_1]))
 
 
         # Remove the visited nodes from obj_list
@@ -149,9 +150,10 @@ while len(obj_list):
                 current = each
                 each.is_input = 'true'
                 i = 0
-        print "Remaining nodes for traversal: {}".format([str(each.antecedent_id) for each in obj_list])
+        print ("Remaining nodes for traversal: {}".format([str(each.antecedent_id) for each in obj_list]))
 
-        print "\nIn iteration {}, {} is calculated and now it's an input node. We've calculated {} subtrees so far.".format(count-1, str(current.antecedent_id), subtree)
+        print ("\nIn iteration {}, {} is calculated and now it's an input node. We've calculated {} subtrees so far."
+               .format(count-1, str(current.antecedent_id), subtree))
         subtree += 1
         obj_list.sort(key=lambda x: x.is_input == "true", reverse=True)
 
