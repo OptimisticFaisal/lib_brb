@@ -72,7 +72,7 @@ class RuleBase(object):
 
         # print "Combinations are: {}".format(combinations)
 
-        print ("Referential Values of Consequent attributes: {}".format(self.con_ref_values))
+        print (": {}".format(self.con_ref_values))
 
         # Calculate y for each combination and distribute consequence values in the range
         for each in self.combinations:
@@ -109,6 +109,10 @@ class RuleBase(object):
         print ("Rule Base: ")
         for each in self.rule_row_list:
             print (each.__dict__)
+        return self.rule_row_list
+
+
+    def crete_ebrb(self):
         return self.rule_row_list
 
     '''
@@ -181,6 +185,7 @@ class RuleBase(object):
     Update rule base
     '''
 
+
     def belief_update(self):
         tao = [0 for _ in range(len(self.obj_list))]
         for i in range(len(self.obj_list)):
@@ -218,6 +223,35 @@ class RuleBase(object):
     '''
     Rule aggregation
     '''
+    def rule_aggregation(self):
+        b=[0 for _ in range(len(self.rule_row_list))]
+        a=[[0 for _ in range(len(self.con_ref_values))]for _ in range(len(self.rule_row_list))]
+        c=[0 for _ in range(len(self.rule_row_list))]
+        final_consequence=[0 for _ in range(len(self.con_ref_values))]
+        product_a=1
+        product_b=[1 for _ in range(len(self.con_ref_values))]
+        product_c=1
+        sum_product_b=0
+
+        for i in range(len(self.rule_row_list)):
+            c[i]*=1 - (float(self.rule_row_list[j].activation_weight))
+            product_c*=c[i]
+            for j in range(len(self.rule_row_list[i])):
+                b[i]+=self.rule_row_list[i][j]
+                b[i]=1-b[i]
+            product_a*=b[i]
+            for j in range(len(self.rule_row_list[i])):
+                a[i][j]=self.rule_row_list[i][j]-b[i]+1
+                product_b[j]*=a[i][j]
+        for j in range(len(product_b)):
+            sum_product_b+=product_b[j]
+        for j in range(len(product_b)):
+            final_consequence[j]=(product_b[j]-product_a)/(sum_product_b-product_c-(len(self.con_ref_values))-1)
+
+        return final_consequence
+
+
+
     def aggregate_rule(self):
         # Get all the consequent value list from rule base
         consequent_array = []
