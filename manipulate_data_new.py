@@ -2,6 +2,7 @@ import json
 from collections import OrderedDict
 import logging
 from rules import Rules
+from openpyxl import load_workbook
 from data import Data
 
 # with open('data.json') as file_data:
@@ -113,6 +114,16 @@ class RuleBase(object):
 
 
     def crete_ebrb(self):
+        wb=load_workbook('DataCenter.xlsx')
+        ws=wb.active
+        for i in range (len(self.obj_list)):
+            column=ws[self.obj_list[i]]
+        first_column=ws['A']
+        for x in range(len(column)):
+            print(first_column[x].value)
+
+
+
         return self.rule_row_list
 
     '''
