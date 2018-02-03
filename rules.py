@@ -5,7 +5,7 @@ class Rules(object):
         self.combinations = []
         self.antecedents_belief_dist = []
         self.consequence_val = []
-        self.consequenent_belief_dist = []
+        self.consequence_belief_dist = []
         self.matching_degree = None
         self.activation_weight = None
         self.individual_matching = None
