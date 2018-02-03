@@ -116,18 +116,58 @@ class RuleBase(object):
     def crete_ebrb(self):
         wb=load_workbook('DataCenter.xlsx')
         ws=wb.active
+        t=wb.get_sheet_names()[0]
+        n=ws.max_row
+        col=[]
+        antecedent_dist=list()
         for i in range (len(self.obj_list)):
-            column=ws[self.obj_list[i]]
-        first_column=ws['A']
+            col.append(self.obj_list[i].name)
+        for row in range(1,n+1):
+            rule=Rules()
+            for idx, column in enumerate (col):
+                cell_name="{}{}".format(column,row)
+                input_value=ws[cell_name].value
+                self.input_transformation2(idx,input_value)
+                antecedent_dist.append(self.obj_list[idx].transformed_val)
+            rule.antecedents_belief_dist.append(antecedent_dist)
+            parent_cell_name="{}{}".format(self.parent.name,row)
+            consequent_input_value=ws[parent_cell_name].value
+            self.input_transformation2(None,consequent_input_value)
+            rule.consequenent_belief_dist.append(self.parent.transformed_val)
+            self.rule_row_list.append(rule)
+
+
+
+
+            #column=ws[self.obj_list[i].name]
         for x in range(len(column)):
-            print(first_column[x].value)
-
-
-
+            self.input_transformation2(i,column[x].value)
+            print(column[x].value)
         return self.rule_row_list
+
+
+
+
+    def input_transformation2(self,attribute_index, attribute_input_value):
+        if (attribute_index==None):
+            attribute=self.parent
+        else:
+            attribute=self.obj_list[attribute_index]
+        for i in range(len(attribute.ref_val)):
+            if (float(attribute.ref_val[i]) > attribute_input_value) and (attribute_input_value > float(attribute.ref_val[i + 1])):
+                val_1 = (
+                        (float(attribute.ref_val[i]) - attribute_input_value) / (float(attribute.ref_val[i]) - float(attribute.ref_val[i + 1]))
+                )
+                attribute.transformed_val[i+1] = str(val_1)
+                val_2 = 1 - val_1
+                attribute.transformed_val[i] = str(val_2)
+
+
+
 
     '''
     Transform input value in the range of consequent values
+                each.transformed_val[j + 1] = str(val_1)
     '''
 
     def input_transformation(self):
