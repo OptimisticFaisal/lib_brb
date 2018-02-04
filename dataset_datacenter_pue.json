@@ -1,0 +1,81 @@
+{"A": {
+    "antecedent_id": "A",
+    "antecedent_name": "External Temperature",
+    "attribute_weight": "1",
+    "ref_val": [
+      "17",
+      "13.5",
+      "10",
+      "6.5",
+      "3"
+    ],
+    "ref_title": [
+      "Very High",
+      "High",
+      "Medium",
+      "Low",
+      "Very Low"
+    ],
+    "consequent_values": [
+      "[]"
+    ],
+    "crisp_val": "",
+    "parent": "C",
+    "input_val": "5",
+    "is_input": "true"
+  },
+  "B": {
+    "antecedent_id": "B",
+    "antecedent_name": "Room Temperature",
+    "attribute_weight": "1",
+    "ref_val": [
+      "26",
+      "24.5",
+      "23",
+      "21.5",
+      "20"
+    ],
+    "ref_title": [
+      "Very High",
+      "High",
+      "Medium",
+      "Low",
+      "Very Low"
+    ],
+    "consequent_values": [
+      "[]"
+    ],
+    "crisp_val": "",
+    "parent": "C",
+    "input_val": "21",
+    "is_input": "true"
+  }
+  ,
+  "C": {
+    "antecedent_id": "C",
+    "antecedent_name": "Data Center PUE",
+    "attribute_weight": "1",
+    "ref_val": [
+      "2",
+      "1.75",
+      "1.5",
+      "1.25",
+      "1"
+    ],
+    "ref_title": [
+      "Very High",
+      "High",
+      "Medium",
+      "Low",
+      "Very Low"
+    ],
+    "consequent_values": [
+      "[]"
+    ],
+    "crisp_val": "",
+    "parent": "",
+    "input_val": "1.3",
+    "is_input": "false"
+  }
+
+}

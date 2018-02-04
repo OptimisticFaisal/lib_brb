@@ -1,9 +1,13 @@
 import json
 from collections import OrderedDict
 import logging
+
+import math
+
 from rules import Rules
 from openpyxl import load_workbook
 from data import Data
+
 
 # with open('data.json') as file_data:
 # with open('single_tree.json') as file_data:
@@ -112,48 +116,38 @@ class RuleBase(object):
             print (each.__dict__)
         return self.rule_row_list
 
+    def generate_extended_belief_rule_base(self):
+        wb = load_workbook('DataCenter.xlsx')
+        ws = wb.active
+        n = ws.max_row
+        col = []
 
-    def crete_ebrb(self):
-        wb=load_workbook('DataCenter.xlsx')
-        ws=wb.active
-        t=wb.get_sheet_names()[0]
-        n=ws.max_row
-        col=[]
-        antecedent_dist=list()
-        for i in range (len(self.obj_list)):
+        for i in range(len(self.obj_list)):
             col.append(self.obj_list[i].name)
-        for row in range(1,n+1):
-            rule=Rules()
-            for idx, column in enumerate (col):
-                cell_name="{}{}".format(column,row)
-                input_value=ws[cell_name].value
-                self.input_transformation2(idx,input_value)
-                antecedent_dist.append(self.obj_list[idx].transformed_val)
-            rule.antecedents_belief_dist.append(antecedent_dist)
-            parent_cell_name="{}{}".format(self.parent.name,row)
-            consequent_input_value=ws[parent_cell_name].value
-            self.input_transformation2(None,consequent_input_value)
-            rule.consequenent_belief_dist.append(self.parent.transformed_val)
+        for row in range(1, n+1):
+            rule = Rules()
+            # antecedent_dist = list()
+            for idx, column in enumerate(col):
+                cell_name = "{}{}".format(column, row)
+                input_value = ws[cell_name].value
+                self.input_transformation2(idx, input_value)
+                # antecedent_dist.append(self.obj_list[idx].transformed_val)
+                rule.antecedents_belief_dist.append(self.obj_list[idx].transformed_val)
+            # rule.antecedents_belief_dist.append(antecedent_dist)
+            parent_cell_name = "{}{}".format(self.parent.name, row)
+            consequent_input_value = ws[parent_cell_name].value
+            self.input_transformation2(None, consequent_input_value)
+            rule.consequence_belief_dist = self.parent.transformed_val
             self.rule_row_list.append(rule)
-
-
-
-
-            #column=ws[self.obj_list[i].name]
-        for x in range(len(column)):
-            self.input_transformation2(i,column[x].value)
-            print(column[x].value)
         return self.rule_row_list
 
-
-
-
-    def input_transformation2(self,attribute_index, attribute_input_value):
-        if (attribute_index==None):
-            attribute=self.parent
+    def input_transformation2(self, attribute_index, attribute_input_value):
+        if attribute_index is None:
+            attribute = self.parent
         else:
-            attribute=self.obj_list[attribute_index]
-        for i in range(len(attribute.ref_val)):
+            attribute = self.obj_list[attribute_index]
+        attribute.transformed_val = [0 for _ in range(len(attribute.ref_val))]
+        for i in range(len(attribute.ref_val)-1):
             if (float(attribute.ref_val[i]) > attribute_input_value) and (attribute_input_value > float(attribute.ref_val[i + 1])):
                 val_1 = (
                         (float(attribute.ref_val[i]) - attribute_input_value) / (float(attribute.ref_val[i]) - float(attribute.ref_val[i + 1]))
@@ -162,8 +156,19 @@ class RuleBase(object):
                 val_2 = 1 - val_1
                 attribute.transformed_val[i] = str(val_2)
 
-
-
+    def individual_matching_degree(self):
+        for rule in range(len(self.rule_row_list)):
+            attribute_individual_matching = list()
+            current_rule = self.rule_row_list[rule]
+            antecedent_belief_dist = current_rule.antecedents_belief_dist
+            for attribute_index, belief_dist in enumerate(antecedent_belief_dist):
+                antecedent_attribute = self.obj_list[attribute_index]
+                temp = 0
+                for index, belief in enumerate(belief_dist):
+                    temp += pow((antecedent_attribute.transformed_val[index]-belief), 2)
+                individual_matching = 1 - math.sqrt(temp / 2)
+                attribute_individual_matching.append(individual_matching)
+            rule.attribute_individual_matching.append(attribute_individual_matching)
 
     '''
     Transform input value in the range of consequent values
@@ -206,21 +211,23 @@ class RuleBase(object):
     '''
 
     def activation_weight(self):
-        matching_degree = list()
+        # matching_degree = list()
 
         for i, row in enumerate(self.combinations):
+            current_rule = self.rule_row_list[i]
             degree = 1.0
             for idx, val in enumerate(row):
                 degree *= float(
                     pow(float(self.obj_list[idx].transformed_val[val]), float(self.obj_list[idx].attribute_weight))
 
                 )
-            matching_degree.insert(i, degree)
+            # matching_degree.insert(i, degree)
+            current_rule.matching_degree = degree
 
         sum = 0.0
         for k in range(len(self.rule_row_list)):
             current_rule = self.rule_row_list[k]
-            current_rule.matching_degree = matching_degree[k]
+            # current_rule.matching_degree = matching_degree[k]
             sum += float(current_rule.rule_weight) * float(current_rule.matching_degree)
 
         for p in range(len(self.rule_row_list)):
@@ -231,11 +238,9 @@ class RuleBase(object):
             )
             current_rule.activation_weight = activation_weight
 
-
     '''
     Update rule base
     '''
-
 
     def belief_update(self):
         tao = [0 for _ in range(len(self.obj_list))]
@@ -252,7 +257,6 @@ class RuleBase(object):
         for j in range(len(self.obj_list)):
             summation = sum([float(each) for each in self.obj_list[j].transformed_val])
             total += summation
-
 
         if sum([each for each in tao]) <= 0:
             update_value = 1
@@ -274,34 +278,32 @@ class RuleBase(object):
     '''
     Rule aggregation
     '''
-    def rule_aggregation(self):
-        b=[0 for _ in range(len(self.rule_row_list))]
-        a=[[0 for _ in range(len(self.con_ref_values))]for _ in range(len(self.rule_row_list))]
-        c=[0 for _ in range(len(self.rule_row_list))]
-        final_consequence=[0 for _ in range(len(self.con_ref_values))]
-        product_a=1
-        product_b=[1 for _ in range(len(self.con_ref_values))]
-        product_c=1
-        sum_product_b=0
+    def rules_aggregation(self):
+        b = [0 for _ in range(len(self.rule_row_list))]
+        a = [[0 for _ in range(len(self.con_ref_values))]for _ in range(len(self.rule_row_list))]
+        c = [0 for _ in range(len(self.rule_row_list))]
+        final_consequence = [0 for _ in range(len(self.con_ref_values))]
+        product_a = 1
+        product_b = [1 for _ in range(len(self.con_ref_values))]
+        product_c = 1
+        sum_product_b = 0
 
         for i in range(len(self.rule_row_list)):
-            c[i]*=1 - (float(self.rule_row_list[j].activation_weight))
-            product_c*=c[i]
+            c[i] *= 1 - (float(self.rule_row_list[j].activation_weight))
+            product_c *= c[i]
             for j in range(len(self.rule_row_list[i])):
-                b[i]+=self.rule_row_list[i][j]
-                b[i]=1-b[i]
-            product_a*=b[i]
+                b[i] += self.rule_row_list[i][j]
+                b[i] = 1-b[i]
+            product_a *= b[i]
             for j in range(len(self.rule_row_list[i])):
-                a[i][j]=self.rule_row_list[i][j]-b[i]+1
-                product_b[j]*=a[i][j]
+                a[i][j] = self.rule_row_list[i][j]-b[i]+1
+                product_b[j] *= a[i][j]
         for j in range(len(product_b)):
-            sum_product_b+=product_b[j]
+            sum_product_b += product_b[j]
         for j in range(len(product_b)):
-            final_consequence[j]=(product_b[j]-product_a)/(sum_product_b-product_c-(len(self.con_ref_values))-1)
+            final_consequence[j] = (product_b[j]-product_a)/(sum_product_b-product_c-(len(self.con_ref_values))-1)
 
         return final_consequence
-
-
 
     def aggregate_rule(self):
         # Get all the consequent value list from rule base

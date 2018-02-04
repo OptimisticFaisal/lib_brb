@@ -492,13 +492,20 @@
     "attribute_weight": "1",
     "ref_val": [
       "1",
-      "0.5",
-      "0"
+      "0.8",
+      "0.6",
+      "0.4",
+      "0.2",
+      "0.0"
+
     ],
     "ref_title": [
       "Severe",
       "Average",
-      "Low"
+      "Low",
+      "high",
+      "medium",
+      "mild"
     ],
     "consequent_values": [
       "[]"

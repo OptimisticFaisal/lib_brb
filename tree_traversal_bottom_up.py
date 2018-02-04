@@ -11,7 +11,7 @@ from manipulate_data_new import RuleBase
 from data import Data
 
 # Read data from file
-with open('temp_data.json') as file_data:
+with open('dataset_datacenter_pue.json') as file_data:
 # with open('2nd_order_tree.json') as file_data:
 #with open('api/single_tree.json') as file_data:
 # with open('sunonda_tree.json') as file_data:
@@ -74,7 +74,7 @@ while len(obj_list):
         # import pdb; pdb.set_trace()
         # brb_calculation = RuleBase()
         rule_base = RuleBase(visiting, parent)
-        row_list = rule_base.create_rule_base()
+        #row_list = rule_base.crete_ebrb()
         rule_base.input_transformation()
         rule_base.activation_weight()
         rule_base.belief_update()
@@ -117,13 +117,16 @@ while len(obj_list):
         # import pdb; pdb.set_trace()
         # brb_calculation = RuleBase()
         rule_base = RuleBase(visiting, parent)
-        row_list_1 = rule_base.create_rule_base()
+        rule_base.generate_extended_belief_rule_base()
+        rule_base.individual_matching_degree()
         rule_base.input_transformation()
+        rule_base.individual_matching_degree()
         rule_base.activation_weight()
         rule_base.belief_update()
         consequence_val = rule_base.aggregate_rule()
         parent.consequence_val = consequence_val
         result.insert(count, consequence_val)
+
 
         crisp_val = 0.0
         for i in range(len(parent.ref_val)):
