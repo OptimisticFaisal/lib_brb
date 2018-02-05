@@ -141,7 +141,7 @@ class RuleBase(object):
             self.rule_row_list.append(rule)
         return self.rule_row_list
 
-    def input_transformation2(self, attribute_index, attribute_input_value):
+    def user_input_transformation(self, attribute_index, attribute_input_value):
         if attribute_index is None:
             attribute = self.parent
         else:
@@ -152,23 +152,23 @@ class RuleBase(object):
                 val_1 = (
                         (float(attribute.ref_val[i]) - attribute_input_value) / (float(attribute.ref_val[i]) - float(attribute.ref_val[i + 1]))
                 )
-                attribute.transformed_val[i+1] = str(val_1)
+                attribute.transformed_val[i+1] = val_1
                 val_2 = 1 - val_1
-                attribute.transformed_val[i] = str(val_2)
+                attribute.transformed_val[i] = val_2
 
     def individual_matching_degree(self):
-        for rule in range(len(self.rule_row_list)):
-            attribute_individual_matching = list()
-            current_rule = self.rule_row_list[rule]
-            antecedent_belief_dist = current_rule.antecedents_belief_dist
-            for attribute_index, belief_dist in enumerate(antecedent_belief_dist):
-                antecedent_attribute = self.obj_list[attribute_index]
+        for rule_index, rule in enumerate(self.rule_row_list):
+            # attribute_individual_matching = list()
+            # antecedent_belief_dist = current_rule.antecedents_belief_dist
+            for attribute_index, belief_dist in enumerate(rule.antecedents_belief_dist):
+                # antecedent_attribute = self.obj_list[attribute_index]
                 temp = 0
                 for index, belief in enumerate(belief_dist):
-                    temp += pow((antecedent_attribute.transformed_val[index]-belief), 2)
+                    temp += pow((self.obj_list[attribute_index].transformed_val[index]-belief), 2)
                 individual_matching = 1 - math.sqrt(temp / 2)
-                attribute_individual_matching.append(individual_matching)
-            rule.attribute_individual_matching.append(attribute_individual_matching)
+                rule.attributes_individual_matching.append(individual_matching)
+                # attribute_individual_matching.append(individual_matching)
+            # rule.attribute_individual_matching.append(attribute_individual_matching)
 
     '''
     Transform input value in the range of consequent values
@@ -201,10 +201,28 @@ class RuleBase(object):
                         val_1 = (
                             (float(each.ref_val[j]) - user_input) / (float(each.ref_val[j]) - float(each.ref_val[j+1]))
                         )
-                        each.transformed_val[j + 1] = str(val_1)
+                        each.transformed_val[j + 1] = val_1
                         val_2 = 1 - val_1
-                        each.transformed_val[j] = str(val_2)
-            print ("Value after input transformation: {}".format(each.transformed_val))
+                        each.transformed_val[j] = val_2
+            print("Value after input transformation: {}".format(each.transformed_val))
+
+    def activation_weight_calculation(self):
+        max_attribute_weight = 0
+        for each in range(len(self.obj_list)):
+            if self.obj_list[each].attribute_wight > max_attribute_weight:
+                max_attribute_weight = self.obj_list[each].attribute_weight
+
+        sum_matching_degree = 0
+        for rule_index, rule in enumerate(self.rule_row_list):
+            rule_matching_degree = 1
+            for attribute_index, attribute in enumerate(self.obj_list):
+                rule_matching_degree *= pow(rule.attributes_individual_matching[attribute_index], attribute.attribute_weight / max_attribute_weight)
+            rule.matching_degree = rule_matching_degree *rule.rule_weight
+            # rule.matching_degree = rule_matching_degree
+            sum_matching_degree += rule_matching_degree
+
+        for rule_index, rule in enumerate(self.rule_row_list):
+            rule.activation_weight = rule.matching_degree/sum_matching_degree
 
     '''
     Calculate activation weight
@@ -278,7 +296,7 @@ class RuleBase(object):
     '''
     Rule aggregation
     '''
-    def rules_aggregation(self):
+    def rules_aggregation_anlytical_evidential_Reasoning(self):
         b = [0 for _ in range(len(self.rule_row_list))]
         a = [[0 for _ in range(len(self.con_ref_values))]for _ in range(len(self.rule_row_list))]
         c = [0 for _ in range(len(self.rule_row_list))]
