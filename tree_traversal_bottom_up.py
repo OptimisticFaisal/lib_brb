@@ -118,8 +118,8 @@ while len(obj_list):
         # brb_calculation = RuleBase()
         rule_base = RuleBase(visiting, parent)
         rule_base.generate_extended_belief_rule_base()
-        rule_base.individual_matching_degree()
         rule_base.input_transformation()
+        rule_base.individual_matching_degree()
         rule_base.individual_matching_degree()
         rule_base.activation_weight()
         rule_base.belief_update()
@@ -136,9 +136,9 @@ while len(obj_list):
 
         # import pdb; pdb.set_trace()
 
-        print ("Calculated consequence values for {} are: {}".format(parent.antecedent_id, consequence_val))
+        print("Calculated consequence values for {} are: {}".format(parent.antecedent_id, consequence_val))
 
-        print ("Rule Row List: {}".format([each.__dict__ for each in row_list_1]))
+        print("Rule Row List: {}".format([each.__dict__ for each in row_list_1]))
 
 
         # Remove the visited nodes from obj_list
