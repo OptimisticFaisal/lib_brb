@@ -130,13 +130,13 @@ class RuleBase(object):
             for idx, column in enumerate(col):
                 cell_name = "{}{}".format(column, row)
                 input_value = ws[cell_name].value
-                self.input_transformation2(idx, input_value)
+                self.user_input_transformation(idx, input_value)
                 # antecedent_dist.append(self.obj_list[idx].transformed_val)
                 rule.antecedents_belief_dist.append(self.obj_list[idx].transformed_val)
             # rule.antecedents_belief_dist.append(antecedent_dist)
             parent_cell_name = "{}{}".format(self.parent.name, row)
             consequent_input_value = ws[parent_cell_name].value
-            self.input_transformation2(None, consequent_input_value)
+            self.user_input_transformation(None, consequent_input_value)
             rule.consequence_belief_dist = self.parent.transformed_val
             self.rule_row_list.append(rule)
         return self.rule_row_list
@@ -209,7 +209,7 @@ class RuleBase(object):
     def activation_weight_calculation(self):
         max_attribute_weight = 0
         for each in range(len(self.obj_list)):
-            if self.obj_list[each].attribute_wight > max_attribute_weight:
+            if self.obj_list[each].attribute_weight > max_attribute_weight:
                 max_attribute_weight = self.obj_list[each].attribute_weight
 
         sum_matching_degree = 0

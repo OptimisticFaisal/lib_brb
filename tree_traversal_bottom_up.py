@@ -28,7 +28,7 @@ for each in data:
 
 # Sort the obj_list based on is_input is true
 obj_list.sort(key=lambda x: x.is_input == "true", reverse=True)
-print ("Initial nodes: {}".format([ str(each.antecedent_id) for each in obj_list ]))
+print("Initial nodes: {}".format([ str(each.antecedent_id) for each in obj_list ]))
 
 visited = list()
 
@@ -59,7 +59,8 @@ while len(obj_list):
     for j in range(i + 1, len(obj_list)):
         if obj_list[i].parent == obj_list[j].parent:
             visiting.append(obj_list[j])
-    visiting.append(obj_list[i]) # Add the current node in the list
+    visiting.append(obj_list[i])
+    # Add the current node in the list
 
     # Check if all the siblings has is_input true or not.
     isAllInput = True
@@ -69,13 +70,15 @@ while len(obj_list):
 
     if len(visiting) == len(obj_list):
         # Compute the BRB sub-tree for the nodes in visiting.
-        print ("Computing value of {} for {}".format(parent.antecedent_id,
-        [str(each.antecedent_id) for each in visiting if each.antecedent_id != parent.antecedent_id]))
+        print("Computing value of {} for {}".format(parent.antecedent_id, [str(each.antecedent_id) for each in visiting if each.antecedent_id != parent.antecedent_id]))
         # import pdb; pdb.set_trace()
         # brb_calculation = RuleBase()
         rule_base = RuleBase(visiting, parent)
-        #row_list = rule_base.crete_ebrb()
+        rule_base.generate_extended_belief_rule_base()
+        # row_list = rule_base.crete_ebrb()
         rule_base.input_transformation()
+        rule_base.individual_matching_degree()
+        rule_base.activation_weight_calculation()
         rule_base.activation_weight()
         rule_base.belief_update()
         consequence_val = rule_base.aggregate_rule()
@@ -120,8 +123,8 @@ while len(obj_list):
         rule_base.generate_extended_belief_rule_base()
         rule_base.input_transformation()
         rule_base.individual_matching_degree()
-        rule_base.individual_matching_degree()
-        rule_base.activation_weight()
+        rule_base.activation_weight_calculation()
+        # rule_base.activation_weight()
         rule_base.belief_update()
         consequence_val = rule_base.aggregate_rule()
         parent.consequence_val = consequence_val
