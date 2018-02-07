@@ -3,10 +3,7 @@
 # @Last modified by:   mdrhri-6
 # @Last modified time: 2017-02-13T15:08:06+01:00
 
-
-
 import json
-
 from manipulate_data_new import RuleBase
 from data import Data
 
@@ -75,6 +72,7 @@ while len(obj_list):
         # brb_calculation = RuleBase()
         rule_base = RuleBase(visiting, parent)
         rule_base.generate_extended_belief_rule_base()
+        rule_base.hypertuple_consistency_measure()
         # row_list = rule_base.crete_ebrb()
         rule_base.input_transformation()
         rule_base.individual_matching_degree()
@@ -105,7 +103,7 @@ while len(obj_list):
 
         break
 
-    print ("For {}, parent is: {}".format(str(obj_list[i].antecedent_id), parent.antecedent_id))
+    # print ("For {}, parent is: {}".format(str(obj_list[i].antecedent_id), parent.antecedent_id))
 
     # if not all the siblings has same parent, continue to the next node of obj_list
     if not isAllInput:
@@ -156,9 +154,9 @@ while len(obj_list):
                 current = each
                 each.is_input = 'true'
                 i = 0
-        print ("Remaining nodes for traversal: {}".format([str(each.antecedent_id) for each in obj_list]))
+        print("Remaining nodes for traversal: {}".format([str(each.antecedent_id) for each in obj_list]))
 
-        print ("\nIn iteration {}, {} is calculated and now it's an input node. We've calculated {} subtrees so far."
+        print("\nIn iteration {}, {} is calculated and now it's an input node. We've calculated {} subtrees so far."
                .format(count-1, str(current.antecedent_id), subtree))
         subtree += 1
         obj_list.sort(key=lambda x: x.is_input == "true", reverse=True)
