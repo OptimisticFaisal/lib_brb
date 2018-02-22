@@ -67,7 +67,7 @@
     ],
     "consequent_values": [],
     "crisp_val": 0,
-    "parent": "",
+    "parent": "C",
     "input_val": 1.3,
     "is_input": false
   }
